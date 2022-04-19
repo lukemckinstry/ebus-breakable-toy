@@ -1,9 +1,10 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import Agency
 
 from rest_framework.response import Response
 from .serializers import *
 from rest_framework.decorators import api_view
+from rest_framework.parsers import JSONParser
 
 
 def index(request):
@@ -21,7 +22,7 @@ def agency_list(request):
         serializer = AgencySerializer(qs,context={'request': request} ,many=True)
         return Response({'data': serializer.data})
 
-@api_view(['GET'])
+@api_view(['GET','PUT','DELETE'])
 def agency_detail(request, id):
     """   Show agency """
 
@@ -33,3 +34,15 @@ def agency_detail(request, id):
     if request.method == 'GET':
         serializer = AgencySerializer(qs,context={'request': request})
         return Response({'data': serializer.data})
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = AgencySerializer(qs, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        qs.delete()
+        return HttpResponse(status=204)
