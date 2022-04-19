@@ -13,13 +13,13 @@ logging.basicConfig()
 LOG = logging.getLogger()
 LOG.setLevel(logging.INFO)
 
-def get_gtfs_agency_zips():
+def get_gtfs_agency_zips(input_string):
 	pwd = os.path.dirname(os.path.abspath(__file__))
 	print(pwd)
 	path = "/gtfs/"
 	#path = "/septa-gtfs-sample/"
 	print( pwd + path )
-	files =  glob.glob(pwd + path + 'septa_bus*.zip')
+	files =  glob.glob(pwd + path + '*' + input_string + '*.zip')
 	return files
 
 
@@ -339,9 +339,9 @@ def iter_agencies( agency_zips ):
 	LOG.info('All done!')
 
 
-def main():
+def main(input_string):
 	LOG.info('Going to gather gtfs feed zips')
-	gtfs_agency_zips = get_gtfs_agency_zips()
+	gtfs_agency_zips = get_gtfs_agency_zips(input_string)
 	LOG.info( 'zips: %s', gtfs_agency_zips )
 	iter_agencies( gtfs_agency_zips )
 
