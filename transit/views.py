@@ -20,3 +20,16 @@ def agency_list(request):
         qs = Agency.objects.all().order_by('created')[:30]
         serializer = AgencySerializer(qs,context={'request': request} ,many=True)
         return Response({'data': serializer.data})
+
+@api_view(['GET'])
+def agency_detail(request, id):
+    """   Show agency """
+
+    try:
+        qs = Agency.objects.get(agency_id=id)
+    except Agency.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = AgencySerializer(qs,context={'request': request})
+        return Response({'data': serializer.data})
