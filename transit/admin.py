@@ -10,10 +10,10 @@ class RouteInline(admin.StackedInline):
 
 class AgencyAdmin(admin.ModelAdmin):
 	search_fields = ['agency_name']
-	inlines = [
-		RouteInline,
-	]
-	list_display = ['name','gtfs_url','agency_name', 'num_routes','agency_url', 'num_vehicles', 'num_zero_emission_vehicles']
+	# inlines = [
+	# 	RouteInline,
+	# ]
+	list_display = ['agency_name','gtfs_url', 'num_routes','agency_url', 'num_vehicles', 'num_zero_emission_vehicles']
 
 	def num_routes(self, obj):
 		return obj.route_set.count()
