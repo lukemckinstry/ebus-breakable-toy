@@ -1,8 +1,9 @@
 from django.http import HttpResponse, JsonResponse
+
+from .serializers import AgencySerializer, RouteSerializer
 from .models import Agency, Route
 
 from rest_framework.response import Response
-from .serializers import *
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from rest_framework import status
@@ -35,6 +36,30 @@ def route_list(request, agency_id):
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=400)
 
+@api_view(['GET','PUT','DELETE'])
+def route_detail(request, route_id):
+    """   Retrieve, update or delete a route """
+
+    try:
+        qs = Route.objects.get(id=route_id)
+    except Route.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = RouteSerializer(qs,context={'request': request})
+        return Response({'data': serializer.data})
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = RouteSerializer(qs, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        qs.delete()
+        return HttpResponse(status=204)
 
 @api_view(['GET','POST'])
 def agency_list(request):
@@ -75,7 +100,7 @@ def agency_detail(request, agency_id):
         serializer = AgencySerializer(qs, data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK)
         return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
