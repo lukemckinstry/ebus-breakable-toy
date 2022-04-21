@@ -3,62 +3,72 @@ from rest_framework import status
 from .models import Agency, Route
 from rest_framework.test import APITestCase
 from django.test import TestCase
-from gtfs import loadfeeds
+from django.core.management import call_command
+
 
 class LoadfeedsTests(TestCase):
-
     def test_loadfeeds(self):
         """
-        Ensure ingest of known gtfs file produces expected values for agency url 
+        Ensure ingest of known gtfs file produces expected values for agency url
         and number of routes in database
         """
-        loadfeeds.main('cata')
-        qs = Agency.objects.filter(agency_name='CATA')
+        args = []
+        opts = {}
+        call_command("loadfeeds", *args, **opts)
+
+        qs = Agency.objects.filter(agency_name="CATA")
         num_routes = qs[0].route_set.count()
         self.assertIs(num_routes, 9)
-        self.assertEqual(qs[0].agency_url, 'http://www.catabus.com')
+        self.assertEqual(qs[0].agency_url, "http://www.catabus.com")
 
 
 def create_agency(self):
-    url = reverse('agency_list')
+    url = reverse("agency_list")
     data = {
-        'name': 'TestAgency',
-        'agency_id': 'TestAgency',
-        'agency_name': 'TestAgency',
-        'agency_url': 'www.example.com'
-        }
-    response = self.client.post(url, data, format='json')
+        "name": "TestAgency",
+        "agency_id": "TestAgency",
+        "agency_name": "TestAgency",
+        "agency_url": "www.example.com",
+    }
+    response = self.client.post(url, data, format="json")
     return response
+
 
 def create_route(self, agency):
     test_agency_uuid = agency.id
     test_agency_id = agency.agency_id
-    url = reverse('route_list', args=[test_agency_id,])
+    url = reverse(
+        "route_list",
+        args=[
+            test_agency_id,
+        ],
+    )
     data = {
-        'route_id':'999',
-        'agency_id':test_agency_uuid,
-		'route_short_name':'',
-		'route_long_name':'',
-		'route_desc':'Test desc',
-		'route_type':'3',
-		'route_url':'',
-		'route_color':'',
-		'route_text_color':'',
-		'route_sort_order':'',
-		'trips_monday':'0',
-		'trips_tuesday':'0',
-		'trips_wednesday':'0',
-		'trips_thursday':'0',
-		'trips_friday':'0',
-		'trips_saturday':'0',
-		'trips_sunday':'0',
-        'zev_charging_infrastrucutre':'False',
-        'zev_notes':'',
-        'pct_zev_service':'0.0',
-        'num_zev':'0',
+        "route_id": "999",
+        "agency_id": test_agency_uuid,
+        "route_short_name": "",
+        "route_long_name": "",
+        "route_desc": "Test desc",
+        "route_type": "3",
+        "route_url": "",
+        "route_color": "",
+        "route_text_color": "",
+        "route_sort_order": "",
+        "trips_monday": "0",
+        "trips_tuesday": "0",
+        "trips_wednesday": "0",
+        "trips_thursday": "0",
+        "trips_friday": "0",
+        "trips_saturday": "0",
+        "trips_sunday": "0",
+        "zev_charging_infrastrucutre": "False",
+        "zev_notes": "",
+        "pct_zev_service": "0.0",
+        "num_zev": "0",
     }
-    response = self.client.post(url, data, format='json')
+    response = self.client.post(url, data, format="json")
     return response
+
 
 class AgencyTests(APITestCase):
     def test_create_agency(self):
@@ -68,7 +78,8 @@ class AgencyTests(APITestCase):
         response = create_agency(self)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Agency.objects.count(), 1)
-        self.assertEqual(Agency.objects.get().agency_id, 'TestAgency')
+        self.assertEqual(Agency.objects.get().agency_id, "TestAgency")
+
 
 class RouteTests(APITestCase):
     def test_create_route(self):
@@ -80,7 +91,7 @@ class RouteTests(APITestCase):
         response = create_route(self, agency)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Route.objects.count(), 1)
-        self.assertEqual(Route.objects.get().route_id, '999')
+        self.assertEqual(Route.objects.get().route_id, "999")
 
     def test_update_route(self):
         """
@@ -91,31 +102,36 @@ class RouteTests(APITestCase):
         _ = create_route(self, agency)
         route = Route.objects.get()
         test_route_id = route.id
-        url = reverse('route_detail', args=[test_route_id,])
+        url = reverse(
+            "route_detail",
+            args=[
+                test_route_id,
+            ],
+        )
         data = {
-            'id': test_route_id,
-            'route_id':'888',
-			'route_short_name':'',
-			'route_long_name':'',
-			'route_desc':'Test desc',
-			'route_type':'3',
-			'route_url':'',
-			'route_color':'',
-			'route_text_color':'',
-			'route_sort_order':'',
-			'trips_monday':'0',
-			'trips_tuesday':'0',
-			'trips_wednesday':'0',
-			'trips_thursday':'0',
-			'trips_friday':'0',
-			'trips_saturday':'0',
-			'trips_sunday':'0',
-            'zev_charging_infrastrucutre':'False',
-            'zev_notes':'',
-            'pct_zev_service':'0.0',
-            'num_zev':'0',
+            "id": test_route_id,
+            "route_id": "888",
+            "route_short_name": "",
+            "route_long_name": "",
+            "route_desc": "Test desc",
+            "route_type": "3",
+            "route_url": "",
+            "route_color": "",
+            "route_text_color": "",
+            "route_sort_order": "",
+            "trips_monday": "0",
+            "trips_tuesday": "0",
+            "trips_wednesday": "0",
+            "trips_thursday": "0",
+            "trips_friday": "0",
+            "trips_saturday": "0",
+            "trips_sunday": "0",
+            "zev_charging_infrastrucutre": "False",
+            "zev_notes": "",
+            "pct_zev_service": "0.0",
+            "num_zev": "0",
         }
-        response = self.client.put(url, data, format='json')
+        response = self.client.put(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(Route.objects.count(), 1)
-        self.assertEqual(Route.objects.get().route_id, '888')
+        self.assertEqual(Route.objects.get().route_id, "888")
