@@ -7,9 +7,9 @@ class AgencyAdmin(admin.ModelAdmin):
     search_fields = ["agency_name"]
 
     list_display = [
+        "agency_name",
         "name",
         "gtfs_url",
-        "agency_name",
         "num_routes",
         "agency_url",
         "num_vehicles",
