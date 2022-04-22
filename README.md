@@ -23,16 +23,12 @@ docker-compose build
 ```
 docker-compose up
 ```
+Open [http://localhost:9202](http://localhost:9202) to view it in the browser.
 * Run migrations, create superuser, collect static files
 ```
 docker-compose exec web python manage.py migrate
 docker-compose exec web python manage.py createsuperuser
 docker-compose exec web python manage.py collectstatic
-```
-* Download sample gtfs data 
-
-```
-docker-compose exec web python manage.py loadfeeds --sample
 ```
 * Download sample gtfs data 
 
