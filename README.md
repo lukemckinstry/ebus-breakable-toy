@@ -35,4 +35,3 @@ docker-compose exec web python manage.py collectstatic
 ```
 docker-compose exec web python manage.py loadfeeds --sample
 ```
-Open [http://localhost:9202](http://localhost:9202) to view it in the browser.
