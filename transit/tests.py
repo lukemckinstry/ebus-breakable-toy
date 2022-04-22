@@ -12,7 +12,7 @@ class LoadfeedsTests(TestCase):
         Ensure ingest of known gtfs file produces expected values for agency url
         and number of routes in database
         """
-        args = []
+        args = ["--debug"]
         opts = {}
         call_command("loadfeeds", *args, **opts)
 
