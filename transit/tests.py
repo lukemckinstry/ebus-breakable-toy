@@ -4,6 +4,7 @@ from .models import Agency, Route
 from rest_framework.test import APITestCase
 from django.test import TestCase
 from django.core.management import call_command
+import json
 
 
 class LoadfeedsTests(TestCase):
@@ -23,7 +24,7 @@ class LoadfeedsTests(TestCase):
 
 
 def create_agency(self):
-    url = reverse("agency_list")
+    url = reverse("agency-list")
     data = {
         "name": "TestAgency",
         "agency_id": "TestAgency",
@@ -36,13 +37,7 @@ def create_agency(self):
 
 def create_route(self, agency):
     test_agency_uuid = agency.id
-    test_agency_id = agency.agency_id
-    url = reverse(
-        "route_list",
-        args=[
-            test_agency_id,
-        ],
-    )
+    url = reverse("route-create")
     data = {
         "route_id": "999",
         "agency_id": test_agency_uuid,
@@ -93,6 +88,25 @@ class RouteTests(APITestCase):
         self.assertEqual(Route.objects.count(), 1)
         self.assertEqual(Route.objects.get().route_id, "999")
 
+    def test_list_route_by_agency(self):
+        """
+        Ensure we can list route objects by agency.
+        """
+        _ = create_agency(self)
+        agency = Agency.objects.get()
+        create_route(self, agency)
+        test_agency_uuid = agency.id
+        url = reverse(
+            "route-list",
+            args=[
+                test_agency_uuid,
+            ],
+        )
+        response = self.client.get(url, format="json")
+        json_response = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(json_response), 1)
+
     def test_update_route(self):
         """
         Ensure we can update a route object.
@@ -102,8 +116,9 @@ class RouteTests(APITestCase):
         _ = create_route(self, agency)
         route = Route.objects.get()
         test_route_id = route.id
+        print("test route id --> ", test_route_id)
         url = reverse(
-            "route_detail",
+            "route-detail",
             args=[
                 test_route_id,
             ],
