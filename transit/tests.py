@@ -40,7 +40,7 @@ def create_route(self, agency):
     url = reverse("route-create")
     data = {
         "route_id": "999",
-        "agency_id": test_agency_uuid,
+        "agency": test_agency_uuid,
         "route_short_name": "",
         "route_long_name": "",
         "route_desc": "Test desc",
@@ -125,6 +125,7 @@ class RouteTests(APITestCase):
         data = {
             "id": test_route_id,
             "route_id": "888",
+            "agency": agency.id,
             "route_short_name": "",
             "route_long_name": "",
             "route_desc": "Test desc",

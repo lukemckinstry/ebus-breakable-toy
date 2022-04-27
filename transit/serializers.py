@@ -4,12 +4,7 @@ from .models import Route, Agency
 
 class RouteSerializer(serializers.ModelSerializer):
 
-    agency_name = serializers.CharField(
-        read_only=False, source="agency_id.agency_name", required=False
-    )
-    agency_id = serializers.CharField(
-        read_only=False, source="agency_id.id", required=False
-    )
+    agency = serializers.PrimaryKeyRelatedField(queryset=Agency.objects.all())
 
     class Meta:
         model = Route
@@ -17,8 +12,7 @@ class RouteSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "route_id",
-            "agency_name",
-            "agency_id",
+            "agency",
             "route_short_name",
             "route_long_name",
             "route_desc",
@@ -38,12 +32,6 @@ class RouteSerializer(serializers.ModelSerializer):
             "pct_zev_service",
             "num_zev",
         ]
-
-    def create(self, validated_data):
-        agency_id = validated_data.pop("agency_id")
-        agency = Agency.objects.get(id=agency_id["id"])
-        route = Route.objects.create(agency_id=agency, **validated_data)
-        return route
 
 
 class AgencySerializer(serializers.ModelSerializer):
