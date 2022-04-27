@@ -31,5 +31,5 @@ class RouteViewSet(viewsets.ModelViewSet):
         agency = self.kwargs.get("agency_pk")  # supports get request by agency endpoint
         if not agency:
             return Route.objects.all()  # all other requests
-        queryset = Route.objects.all().filter(agency_id=agency)
+        queryset = Route.objects.all().filter(agency=agency)
         return queryset

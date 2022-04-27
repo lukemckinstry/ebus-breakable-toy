@@ -91,12 +91,12 @@ def write_agency_to_db(obj):
 
 def write_route_to_db(obj):
 
-    agency = Agency(id=obj.get("agency_uuid"))
+    agency = Agency.objects.get(id=obj.get("agency_uuid"))
     route_id = obj.get("route_id", "")
 
     Route.objects.update_or_create(
         route_id=route_id,
-        agency_id=agency,
+        agency_id=agency.id,
         route_short_name=obj.get("route_short_name", ""),
         route_long_name=obj.get("route_long_name", ""),
         route_desc=obj.get("route_desc", ""),

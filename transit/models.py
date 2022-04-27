@@ -27,21 +27,25 @@ class Agency(models.Model):
     name = models.CharField(max_length=100, blank=False)
 
     ### from gtfs
-    agency_id = models.CharField(max_length=100, blank=True)
+    agency_id = models.CharField(max_length=100, blank=True, default="")
     agency_name = models.CharField(max_length=100)  # required
     agency_url = models.CharField(max_length=100)  # required
     agency_timezone = models.CharField(
-        max_length=50, blank=True, choices=TIMEZONES
-    )  # required
-    agency_lang = models.CharField(max_length=50, blank=True, choices=LANGUAGES)
-    agency_phone = models.CharField(max_length=20, blank=True)
-    agency_fare_url = models.CharField(max_length=100, blank=True)
-    agency_email = models.EmailField(max_length=100, blank=True)
+        max_length=50, blank=True, choices=TIMEZONES, default=""
+    )
+    agency_lang = models.CharField(
+        max_length=50, blank=True, choices=LANGUAGES, default=""
+    )
+    agency_phone = models.CharField(max_length=20, blank=True, default="")
+    agency_fare_url = models.CharField(max_length=100, blank=True, default="")
+    agency_email = models.EmailField(max_length=100, blank=True, default="")
 
     ### managed in app
     num_vehicles = models.IntegerField(blank=True, null=True)
     num_zero_emission_vehicles = models.IntegerField(blank=True, null=True)
-    gtfs_url = models.CharField(max_length=100, blank=True)  ## for management process
+    gtfs_url = models.CharField(
+        max_length=100, blank=True, default=""
+    )  ## for management process
     accepted_domains = ArrayField(
         models.CharField(max_length=100), blank=True, default=list
     )
@@ -55,10 +59,10 @@ class Route(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
+    agency = models.ForeignKey(Agency, on_delete=models.CASCADE)
 
     # from gtfs
     route_id = models.CharField(max_length=50)  # required
-    agency_id = models.ForeignKey(Agency, on_delete=models.CASCADE)
     route_short_name = models.CharField(max_length=50, blank=True)
     route_long_name = models.CharField(max_length=100, blank=True)
     route_desc = models.CharField(max_length=500)
