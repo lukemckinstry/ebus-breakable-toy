@@ -88,7 +88,7 @@ class Route(models.Model):
     trips_sunday = models.IntegerField(blank=True)
 
     ### user managed fields
-    zev_charging_infrastrucutre = models.BooleanField(default=False)
+    zev_charging_infrastructure = models.BooleanField(default=False)
     zev_notes = models.TextField(blank=True, null=True)
     pct_zev_service = models.FloatField(blank=True, null=True)
     num_zev = models.IntegerField(blank=True, null=True)

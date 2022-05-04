@@ -27,7 +27,7 @@ class RouteSerializer(serializers.ModelSerializer):
             "trips_friday",
             "trips_saturday",
             "trips_sunday",
-            "zev_charging_infrastrucutre",
+            "zev_charging_infrastructure",
             "zev_notes",
             "pct_zev_service",
             "num_zev",
