@@ -1,6 +1,18 @@
 version: "2.1"
 
 services:
+  ebus-client:
+    image: ebus-client
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/usr/local/src
+    working_dir: /usr/local/src
+    ports:
+      - 3202:3000
+    command: npm run start
+
   db:
     image: postgis/postgis:13-3.1
     expose:
@@ -20,6 +32,7 @@ services:
     build: .
     volumes:
       - .:/usr/src
+      - ./frontend/build:/usr/src/static/
     ports:
       - "9202:9202"
     environment:

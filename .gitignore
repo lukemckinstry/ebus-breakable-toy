@@ -176,3 +176,11 @@ gtfs/gtfs
 .terraform
 *.tfstate*
 *.tfstate
+#ignore sample transit files
+transit/management/commands/*.zip
+
+#vscode settings
+
+.vscode/
+
+node_modules/

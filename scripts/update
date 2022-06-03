@@ -26,11 +26,30 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         # set permissions on volumes files to user
         sudo chown -R $(id -u $USER):$(id -u $USER) ./data/db
         
-        # Ensure container images are current
-        docker-compose build
+        # Build app container image first
+        docker-compose \
+            -f docker-compose.yml \
+            build ebus-client
 
-        # Bring up PostgreSQL and Django
-        docker-compose up -d
+        # Install frontend NPM modules
+        docker-compose \
+            -f docker-compose.yml \
+            run --rm --no-deps ebus-client \
+            npm install
+
+        # Build static asset bundle for React frontend
+        # Separated to build app static assets before copied to django container
+        docker-compose \
+            -f docker-compose.yml \
+            run --rm --no-deps ebus-client \
+            npm run build
+
+        # Build django and db container images
+        docker-compose build db web
+
+        # Bring up PostgreSQL and Django in a way that respects
+        # configured service health checks.
+        docker-compose up -d db web
 
         # Apply any outstanding Django migrations
         docker-compose exec web python manage.py migrate
