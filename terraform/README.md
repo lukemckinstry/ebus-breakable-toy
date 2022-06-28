@@ -6,8 +6,8 @@
 Provide your AWS credentials in order to authenticate. Define them as environment variables:
 
 ```bash
-$ export AWS_ACCESS_KEY_ID="YOUR_AWS_ACCESS_KEY_ID"
-$ export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_ACCESS_KEY"
+$ aws configure --profile ebus
+$ export AWS_PROFILE=ebus
 ```
 
 You will be prompted to enter your AWS credentials, along with a default region. These credentials will be used to authenticate calls to the AWS API when using Terraform and the AWS CLI.
@@ -31,5 +31,5 @@ $ terraform apply
 Exec into the running app container
 
 ```bash
-$ aws ecs execute-command --region us-east-1 --cluster app --task <ENTER-TASK-ID-HERE> --container sun-api --command "/bin/bash" --interactive
+$ aws ecs execute-command --region us-east-1 --cluster app --task <ENTER-TASK-ID-HERE> --container ebus-api --command "/bin/bash" --interactive
 ```

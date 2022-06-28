@@ -19,41 +19,24 @@ resource "aws_security_group" "rds" {
   }
 }
 
-variable "rds_db_name" {
-  description = "RDS database name"
-  default     = "mydb"
-}
-variable "rds_username" {
-  description = "RDS database username"
-  default     = "foo"
-}
-variable "rds_password" {
-  description = "RDS database password"
-  default     = "foofoofoo"
-}
-variable "rds_instance_class" {
-  description = "RDS instance type"
-  default     = "db.t3.micro"
-}
-
-resource "aws_db_subnet_group" "sun-api" {
+resource "aws_db_subnet_group" "ebus-app" {
   name       = "main"
   subnet_ids = [aws_subnet.private_d.id, aws_subnet.private_e.id]
 }
 
-resource "aws_db_instance" "sun-api" {
+resource "aws_db_instance" "ebus-app" {
   identifier              = "staging"
   db_name                 = var.rds_db_name
   username                = var.rds_username
   password                = var.rds_password
-  port                    = "5432"
-  engine                  = "postgres"
-  engine_version          = "13.6"
+  port                    = var.rds_port
+  engine                  = var.rds_engine
+  engine_version          = var.rds_enigne_version
   instance_class          = var.rds_instance_class
   allocated_storage       = "20"
   storage_encrypted       = false
   vpc_security_group_ids  = [aws_security_group.rds.id]
-  db_subnet_group_name    = aws_db_subnet_group.sun-api.name
+  db_subnet_group_name    = aws_db_subnet_group.ebus-app.name
   multi_az                = false
   storage_type            = "gp2"
   publicly_accessible     = false

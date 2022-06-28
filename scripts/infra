@@ -17,6 +17,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         usage
     else
 
+        pushd ./terraform
 
         case "${1}" in
             plan)

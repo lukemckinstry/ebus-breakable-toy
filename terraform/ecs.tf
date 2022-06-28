@@ -2,9 +2,9 @@ resource "aws_ecs_cluster" "app" {
   name = "app"
 }
 
-resource "aws_ecs_service" "sun_api" {
-  name                   = "sun_api"
-  task_definition        = aws_ecs_task_definition.sun_api.arn
+resource "aws_ecs_service" "ebus_app" {
+  name                   = "ebus_app"
+  task_definition        = aws_ecs_task_definition.ebus_app.arn
   cluster                = aws_ecs_cluster.app.id
   launch_type            = "FARGATE"
   enable_execute_command = true
@@ -25,24 +25,24 @@ resource "aws_ecs_service" "sun_api" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.sun_api.arn
-    container_name   = "sun-api"
+    target_group_arn = aws_lb_target_group.ebus_app.arn
+    container_name   = "ebus-app"
     container_port   = "9202"
   }
 }
 
-resource "aws_cloudwatch_log_group" "sun_api" {
-  name = "/ecs/sun-api"
+resource "aws_cloudwatch_log_group" "ebus_app" {
+  name = "/ecs/ebus-app"
 }
 
-resource "aws_ecs_task_definition" "sun_api" {
-  family     = "sun-api"
-  depends_on = [aws_db_instance.sun-api]
+resource "aws_ecs_task_definition" "ebus_app" {
+  family     = "ebus-app"
+  depends_on = [aws_db_instance.ebus-app]
 
   container_definitions = <<EOF
   [
     {
-      "name": "sun-api",
+      "name": "ebus-app",
       "image": "617542518433.dkr.ecr.us-east-1.amazonaws.com/breakable-toy-luke:latest",
       "portMappings": [
         {
@@ -64,7 +64,7 @@ resource "aws_ecs_task_definition" "sun_api" {
         },
         {
             "name": "RDS_HOSTNAME",
-            "value": "${aws_db_instance.sun-api.address}"
+            "value": "${aws_db_instance.ebus-app.address}"
         },
         {
             "name": "RDS_PORT",
@@ -77,7 +77,7 @@ resource "aws_ecs_task_definition" "sun_api" {
         "logDriver": "awslogs",
         "options": {
           "awslogs-region": "us-east-1",
-          "awslogs-group": "/ecs/sun-api",
+          "awslogs-group": "/ecs/ebus-app",
           "awslogs-stream-prefix": "ecs"
         }
       }
@@ -85,85 +85,20 @@ resource "aws_ecs_task_definition" "sun_api" {
   ]
   EOF
 
-  task_role_arn      = aws_iam_role.sun_api_task_role.arn
-  execution_role_arn = aws_iam_role.sun_api_task_execution_role.arn
+  task_role_arn      = aws_iam_role.ebus_app_task_role.arn
+  execution_role_arn = aws_iam_role.ebus_app_task_execution_role.arn
 
   # Minimum values for Fargate containers.
-  cpu                      = 256
-  memory                   = 512
+  cpu                      = var.ecs_cpu
+  memory                   = var.ecs_memory
   requires_compatibilities = ["FARGATE"]
 
   # Required for Fargate containers 
   network_mode = "awsvpc"
 }
 
-# This is the role under which ECS will execute our task, important
-# as we add integrations with other AWS services later
-
-# The assume_role_policy field works with the following aws_iam_policy_document to allow
-# ECS tasks to assume this role we're creating.
-
-
-resource "aws_iam_role" "sun_api_task_execution_role" {
-  name               = "sun-api-task-execution-role"
-  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
-}
-
-resource "aws_iam_role" "sun_api_task_role" {
-  name                = "sun-api-task-role"
-  assume_role_policy  = data.aws_iam_policy_document.ecs_task_assume_role.json
-  managed_policy_arns = [aws_iam_policy.enable_execute_into.arn]
-}
-
-
-
-data "aws_iam_policy_document" "ecs_task_assume_role" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
-}
-
-# Normally prefer not to hardcode an ARN in Terraform, but ok since this is
-# an AWS-managed policy
-data "aws_iam_policy" "ecs_task_execution_role" {
-  arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
-# Attach the above policy to the execution role.
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
-  role       = aws_iam_role.sun_api_task_execution_role.name
-  policy_arn = data.aws_iam_policy.ecs_task_execution_role.arn
-}
-
-resource "aws_iam_policy" "enable_execute_into" {
-  name = "sesAppEnableExecuteInto"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "ssmmessages:CreateControlChannel",
-          "ssmmessages:CreateDataChannel",
-          "ssmmessages:OpenControlChannel",
-          "ssmmessages:OpenDataChannel"
-        ],
-        Resource = "*"
-      },
-    ]
-  })
-
-}
-
-
-resource "aws_lb_target_group" "sun_api" {
-  name        = "sun-api"
+resource "aws_lb_target_group" "ebus_app" {
+  name        = "ebus-app"
   port        = 9202
   protocol    = "HTTP"
   target_type = "ip"
@@ -174,11 +109,11 @@ resource "aws_lb_target_group" "sun_api" {
     path    = "/ping/"
   }
 
-  depends_on = [aws_alb.sun_api]
+  depends_on = [aws_alb.ebus_app]
 }
 
-resource "aws_alb" "sun_api" {
-  name               = "sun-api-lb"
+resource "aws_alb" "ebus_app" {
+  name               = "ebus-app-lb"
   internal           = false
   load_balancer_type = "application"
 
@@ -196,17 +131,17 @@ resource "aws_alb" "sun_api" {
   depends_on = [aws_internet_gateway.igw]
 }
 
-resource "aws_alb_listener" "sun_api_http" {
-  load_balancer_arn = aws_alb.sun_api.arn
+resource "aws_alb_listener" "ebus_app_http" {
+  load_balancer_arn = aws_alb.ebus_app.arn
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.sun_api.arn
+    target_group_arn = aws_lb_target_group.ebus_app.arn
   }
 }
 
 output "alb_url" {
-  value = "http://${aws_alb.sun_api.dns_name}"
+  value = "http://${aws_alb.ebus_app.dns_name}"
 }

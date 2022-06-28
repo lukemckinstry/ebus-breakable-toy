@@ -17,8 +17,6 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-
-
         #build container image
         docker build -t 617542518433.dkr.ecr.us-east-1.amazonaws.com/breakable-toy-luke:latest .
         
@@ -27,6 +25,5 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
 
         # push container image to ECR
         docker push 617542518433.dkr.ecr.us-east-1.amazonaws.com/breakable-toy-luke
-
     fi
 fi
