@@ -31,5 +31,5 @@ $ terraform apply
 Exec into the running app container
 
 ```bash
-$ aws ecs execute-command --region us-east-1 --cluster app --task <ENTER-TASK-ID-HERE> --container ebus-api --command "/bin/bash" --interactive
+$ aws ecs execute-command --region us-east-1 --cluster app --task <ENTER-TASK-ID-HERE> --container ebus-app --command "/bin/bash" --interactive
 ```

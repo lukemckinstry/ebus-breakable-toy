@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useAppSelector, useAppDispatch } from '../hooks'
+import React from 'react';
+import { useAppSelector } from '../hooks'
 
 import Map from "./Map";
 import Sidebar from './Sidebar';

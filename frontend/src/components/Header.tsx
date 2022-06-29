@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, Dispatch } from "react";
+import React from "react";
 import { useAppSelector, useAppDispatch } from '../hooks'
 import { showNavModal } from "../redux/features/nav";
 import { logoutUser } from "../redux/features/auth";

@@ -1,8 +1,6 @@
-import React, { useEffect, useRef, useState, Dispatch } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from '../hooks'
-import { selectAgency } from "../redux/features/agency";
 import { fetchRoutes, updateRoute } from "../redux/features/route";
-import { loginUser } from "../redux/features/auth";
 import { showNavModal } from "../redux/features/nav";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -11,7 +9,6 @@ import Switch from '@mui/material/Switch';
 
 let RouteDetail = () => {
 
-    const routes = useAppSelector(state => state.route.routes)
     const routesStatus = useAppSelector(state => state.route.status)
     const selectedRoute = useAppSelector(state => state.route.selectedRoute)
     const selectedAgency = useAppSelector(state => state.agency.selectedAgency)
@@ -169,6 +166,7 @@ let RouteDetail = () => {
         if (routesStatus === 'idle' && selectedAgency) {
             dispatch(fetchRoutes(selectedAgency.id))
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [routesStatus, dispatch])
 
     return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, Dispatch } from "react";
+import React, { useEffect } from "react";
 import { useAppSelector, useAppDispatch } from '../hooks'
 import { selectAgency } from "../redux/features/agency";
 import { fetchRoutes, idleRoutes, selectRoute, fetchRouteBBox, clearBBox } from "../redux/features/route";
@@ -47,6 +47,7 @@ let RouteList = () => {
         if (routesStatus === 'idle' && selectedAgency) {
             dispatch(fetchRoutes(selectedAgency.id))
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [routesStatus, dispatch])
 
     return (

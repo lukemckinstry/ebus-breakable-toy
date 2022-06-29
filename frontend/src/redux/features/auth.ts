@@ -51,7 +51,7 @@ const authSlice = createSlice({
                 state.status = "login unsuccessful";
             })
             .addCase(registerUser.fulfilled, (state, action) => {
-                const { email, username, password } = action.payload;
+                const { email, password } = action.payload;
                 const args = {
                     email,
                     password

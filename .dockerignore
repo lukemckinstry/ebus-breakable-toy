@@ -1,0 +1,4 @@
+.git
+terraform
+data/db
+frontend/node_modules

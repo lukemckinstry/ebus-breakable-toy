@@ -26,6 +26,9 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         # set permissions on volumes files to user
         sudo chown -R $(id -u $USER):$(id -u $USER) ./data/db
         
+        # remove previously installed node_modules 
+        #rm -rf frontend/node_modules
+        
         # Build app container image first
         docker-compose \
             -f docker-compose.yml \

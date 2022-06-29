@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import type { RootState } from '../store'
 import { Agency } from '../models'
 import API from '../api';
 

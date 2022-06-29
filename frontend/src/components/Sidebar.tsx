@@ -1,16 +1,7 @@
-import React, { useEffect, useRef, useState, Dispatch } from "react";
-import { useAppSelector, useAppDispatch } from '../hooks'
-import { fetchAgencies } from "../redux/features/agency";
+import React, { } from "react";
+import { useAppSelector } from '../hooks'
 import AgencyList from "./AgencyList";
-import styled from 'styled-components'
 import RouteList from "./RouteList";
-
-
-interface RouteProps {
-    agency_id: string
-}
-
-
 
 let Sidebar = () => {
 

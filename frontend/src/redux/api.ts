@@ -8,7 +8,7 @@ axios.defaults.xsrfCookieName = "XCSRF-TOKEN";
 axios.defaults.withCredentials = true
 
 const axiosService = axios.create({
-    baseURL: ``
+    baseURL: `api/`
 });
 
 const setupInterceptors = (store: Store) => {

@@ -8,6 +8,8 @@ RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
 COPY . /usr/src
 WORKDIR /usr/src
 
+COPY frontend/build /usr/src/static 
+
 EXPOSE 9202
 
 CMD ["-w", "1", \
