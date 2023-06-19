@@ -42,3 +42,16 @@ services:
     depends_on:
       db:
         condition: service_healthy
+  
+  batch-upload:
+    image: batch-upload
+    build:
+      context: ./batch/upload
+    working_dir: /usr/local/src
+    environment:
+      - BATCH_UPLOAD_USERNAME
+      - BATCH_UPLOAD_EMAIL
+      - BATCH_UPLOAD_PASSWORD
+      - DJANGO_API_HOST
+
+
