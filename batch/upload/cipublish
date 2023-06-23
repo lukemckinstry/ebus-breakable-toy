@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "${EBUSTRANSIT_DEBUG}" ]]; then
+    set -x
+fi
+
+function usage() {
+    echo -n \
+        "Usage: $(basename "$0")
+Attempts to build and publish the batch upload container image to AWS Elastic Container Registry.
+"
+}
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+    if [ "${1:-}" = "--help" ]; then
+        usage
+    else
+        # set permissions on volumes files to user
+        #sudo chown -R $(id -u $USER):$(id -u $USER) ./data/db
+
+        #build container image
+        docker build -t 617542518433.dkr.ecr.us-east-1.amazonaws.com/breakable-toy-batch-upload:latest .
+        
+        # get ECR login
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 617542518433.dkr.ecr.us-east-1.amazonaws.com
+
+        # push container image to ECR
+        docker push 617542518433.dkr.ecr.us-east-1.amazonaws.com/breakable-toy-batch-upload
+    fi
+fi
