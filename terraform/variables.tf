@@ -25,7 +25,7 @@ variable "rds_engine" {
 }
 variable "rds_enigne_version" {
   description = "RDS engine version"
-  default     = "13.6"
+  default     = "14.7"
 }
 variable "ecs_cpu" {
   description = "ECS cpu parameter"
