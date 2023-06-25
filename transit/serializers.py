@@ -36,12 +36,6 @@ class RouteSerializer(serializers.ModelSerializer):
             "num_zev",
         ]
 
-
-class DataSourceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DataSource
-        fields = '__all__'
-
 class AgencySerializer(serializers.ModelSerializer):
     data_source = serializers.PrimaryKeyRelatedField(queryset=DataSource.objects.all())
 
@@ -62,6 +56,17 @@ class AgencySerializer(serializers.ModelSerializer):
         #     "num_vehicles",
         #     "num_zero_emission_vehicles",
         # ]
+
+class DataSourceSerializer(serializers.ModelSerializer):
+    agency_records = serializers.SerializerMethodField()
+
+    def get_agency_records(self, data_source):
+        agency_records  = Agency.objects.filter(data_source_id=data_source.id)
+        return AgencySerializer(agency_records, many=True).data
+
+    class Meta:
+        model = DataSource
+        fields = "__all__"
 
 class RouteBatchSerializer(GeoFeatureModelSerializer):
     agency = serializers.PrimaryKeyRelatedField(queryset=Agency.objects.all())
