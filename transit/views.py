@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from .serializers import AgencySerializer, RouteSerializer, RouteBatchSerializer
-from .models import Agency, Route
+from .serializers import AgencySerializer, RouteSerializer, RouteBatchSerializer, DataSourceSerializer
+from .models import Agency, Route, DataSource
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 
@@ -25,6 +25,15 @@ def route_bbox(request, pk):
     return JsonResponse({"bbox": r})
 
 
+class DataSourceViewSet(viewsets.ModelViewSet):
+    """
+    Viewset to automatically provide the `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+
+    queryset = DataSource.objects.all()
+    serializer_class = DataSourceSerializer
+
 class AgencyViewSet(viewsets.ModelViewSet):
     """
     Viewset to automatically provide the `list`, `create`, `retrieve`,
@@ -34,6 +43,12 @@ class AgencyViewSet(viewsets.ModelViewSet):
     queryset = Agency.objects.all()
     serializer_class = AgencySerializer
 
+    def get_queryset(self):
+        data_source = self.kwargs.get("datasource_pk")
+        if not data_source:
+            return Agency.objects.all()  # all other requests
+        queryset = Agency.objects.filter(data_source=data_source)
+        return queryset
 
 class RouteViewSet(viewsets.ModelViewSet):
     """

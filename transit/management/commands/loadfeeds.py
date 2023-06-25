@@ -113,7 +113,7 @@ def write_route_to_db(obj):
         trips_friday=obj.get("friday", ""),
         trips_saturday=obj.get("saturday", ""),
         trips_sunday=obj.get("sunday", ""),
-        geometry=obj.get("geometry", ""),
+        mpoly=obj.get("mpoly", ""),
         route_distance=obj.get("route_distance", ""),
     )
 
@@ -220,7 +220,7 @@ def read_write_gtfs(dd, ziplabel):
                 )
             except:
                 obj["route_distance"] = 0
-            obj["geometry"] = MultiLineString(route_lss)
+            obj["mpoly"] = MultiLineString(route_lss)
 
             ####
             # number of trips per day

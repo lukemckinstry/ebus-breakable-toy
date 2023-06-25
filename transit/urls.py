@@ -1,10 +1,14 @@
 from django.urls import path
-from .views import AgencyViewSet, RouteViewSet, RouteBatchViewSet
+from .views import AgencyViewSet, RouteViewSet, RouteBatchViewSet, DataSourceViewSet
 from .models import Route
 from rest_framework_mvt.views import mvt_view_factory
 
 from . import views
 
+data_source_list = DataSourceViewSet.as_view({"get": "list", "post": "create"})
+data_source_detail = DataSourceViewSet.as_view(
+    {"get": "retrieve", "put": "update", "patch": "partial_update", "delete": "destroy"}
+)
 agency_list = AgencyViewSet.as_view({"get": "list", "post": "create"})
 agency_detail = AgencyViewSet.as_view(
     {"get": "retrieve", "put": "update", "patch": "partial_update", "delete": "destroy"}
@@ -19,6 +23,9 @@ route_batch_detail = RouteBatchViewSet.as_view({"put": "update"})
 
 
 urlpatterns = [
+    path("datasource/", data_source_list, name="data-source-list"),
+    path("datasource/<str:pk>/", data_source_detail, name="data-source-detail"),
+    path("datasource/<str:pk>/agency/", agency_list, name="data-source-agency-list"),
     path("agency/", agency_list, name="agency-list"),
     path("agency/<str:pk>/", agency_detail, name="agency-detail"),
     path("agency/<str:agency_pk>/route", route_list, name="route-list"),

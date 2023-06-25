@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Agency, Route
+from .models import Agency, Route, DataSource
 
 
 class AgencyAdmin(admin.ModelAdmin):
@@ -8,7 +8,6 @@ class AgencyAdmin(admin.ModelAdmin):
     list_display = [
         "agency_name",
         "name",
-        "gtfs_url",
         "num_routes",
         "agency_url",
         "num_vehicles",
@@ -32,3 +31,11 @@ class RouteAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Route, RouteAdmin)
+
+
+class DataSourceAdmin(admin.ModelAdmin):
+    ordering = ["mdb_source_id"]
+    list_display = ["mdb_source_id", "provider", "location_country_code", "location_subdivision_name", "location_municipality", "urls_latest"]
+    search_fields = ["provider", "location_country_code", "location_subdivision_name", "location_municipality"]
+
+admin.site.register(DataSource, DataSourceAdmin)

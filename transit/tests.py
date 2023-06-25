@@ -1,6 +1,6 @@
 from django.urls import reverse
 from rest_framework import status
-from .models import Agency, Route
+from .models import Agency, Route, DataSource
 from transit.user.models import User
 from .views import RouteViewSet
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
@@ -32,10 +32,27 @@ def create_user(self):
     return response
 
 
-def create_agency(self):
+def create_data_source(self):
+    url = reverse("data-source-list")
+    data = {
+    "name": "test",
+    "mdb_source_id": "1234",
+    "location_country_code": "US",
+    "location_subdivision_name": "Anystate",
+    "location_municipality": "Anytown",
+    "provider": "transit agency"
+    }
+    response = self.client.post(url, data, format="json")
+
+    return response
+
+
+def create_agency(self, data_source):
+    test_data_source_id = data_source.id
     url = reverse("agency-list")
     data = {
         "name": "TestAgency",
+        "data_source": test_data_source_id,
         "agency_id": "TestAgency",
         "agency_name": "TestAgency",
         "agency_url": "www.example.com",
@@ -43,6 +60,7 @@ def create_agency(self):
     response = self.client.post(url, data, format="json")
 
     return response
+
 
 
 def create_route(self, agency, user):
@@ -127,12 +145,25 @@ def data_for_route_with_geometry(geom):
     
 
 
+class DataSourceTests(APITestCase):
+    def test_create_data_source(self):
+        """
+        Ensure we can create a new data source object.
+        """
+        response = create_data_source(self)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(DataSource.objects.count(), 1)
+        self.assertEqual(DataSource.objects.get().mdb_source_id, "1234")
+
+
 class AgencyTests(APITestCase):
     def test_create_agency(self):
         """
         Ensure we can create a new agency object.
         """
-        response = create_agency(self)
+        _ = create_data_source(self)
+        data_source = DataSource.objects.get()
+        response = create_agency(self, data_source)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Agency.objects.count(), 1)
         self.assertEqual(Agency.objects.get().agency_id, "TestAgency")
@@ -143,7 +174,9 @@ class RouteTests(APITestCase):
         """
         Ensure we can create a new route object.
         """
-        _ = create_agency(self)
+        _ = create_data_source(self)
+        data_source = DataSource.objects.get()
+        _ = create_agency(self, data_source)
         agency = Agency.objects.get()
         _ = create_user(self)
         user = User.objects.get()
@@ -156,7 +189,9 @@ class RouteTests(APITestCase):
         """
         Ensure we can list route objects by agency.
         """
-        _ = create_agency(self)
+        _ = create_data_source(self)
+        data_source = DataSource.objects.get()
+        _ = create_agency(self, data_source)
         agency = Agency.objects.get()
         _ = create_user(self)
         user = User.objects.get()
@@ -178,7 +213,9 @@ class RouteTests(APITestCase):
         """
         Ensure we can update a route object.
         """
-        _ = create_agency(self)
+        _ = create_data_source(self)
+        data_source = DataSource.objects.get()
+        _ = create_agency(self, data_source)
         agency = Agency.objects.get()
         _ = create_user(self)
         user = User.objects.get()

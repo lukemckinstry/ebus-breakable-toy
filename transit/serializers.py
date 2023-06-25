@@ -1,12 +1,13 @@
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
-from .models import Route, Agency
+from .models import Route, Agency, DataSource
 
 
 class RouteSerializer(serializers.ModelSerializer):
 
     agency = serializers.PrimaryKeyRelatedField(queryset=Agency.objects.all())
+
 
     class Meta:
         model = Route
@@ -36,23 +37,31 @@ class RouteSerializer(serializers.ModelSerializer):
         ]
 
 
+class DataSourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DataSource
+        fields = '__all__'
+
 class AgencySerializer(serializers.ModelSerializer):
+    data_source = serializers.PrimaryKeyRelatedField(queryset=DataSource.objects.all())
+
     class Meta:
         model = Agency
+        fields = '__all__'
 
-        fields = [
-            "id",
-            "agency_id",
-            "agency_name",
-            "agency_url",
-            "agency_timezone",
-            "agency_lang",
-            "agency_phone",
-            "agency_fare_url",
-            "agency_email",
-            "num_vehicles",
-            "num_zero_emission_vehicles",
-        ]
+        # fields = [
+        #     "id",
+        #     "agency_id",
+        #     "agency_name",
+        #     "agency_url",
+        #     "agency_timezone",
+        #     "agency_lang",
+        #     "agency_phone",
+        #     "agency_fare_url",
+        #     "agency_email",
+        #     "num_vehicles",
+        #     "num_zero_emission_vehicles",
+        # ]
 
 class RouteBatchSerializer(GeoFeatureModelSerializer):
     agency = serializers.PrimaryKeyRelatedField(queryset=Agency.objects.all())

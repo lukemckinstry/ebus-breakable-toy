@@ -19,6 +19,32 @@ ROUTE_TYPES = [
     ("7", "Funicular"),
 ]
 
+class DataSource(models.Model):
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+    name = models.CharField(max_length=100, blank=False)
+
+    ### Upload Tracking fields
+    last_upload = models.DateTimeField(null=True)
+
+    ### Mobility Database fields 
+    mdb_source_id = models.CharField(max_length=32, blank=True)
+    location_country_code = models.CharField(max_length=32, blank=True)
+    location_subdivision_name = models.CharField(max_length=100, blank=True)
+    location_municipality = models.CharField(max_length=100, blank=True)
+    provider = models.CharField(max_length=250, blank=True)
+    urls_direct_download = models.CharField(max_length=250, blank=True)
+    urls_authentication_type = models.CharField(max_length=100, blank=True)
+    urls_authentication_info = models.CharField(max_length=100, blank=True)
+    urls_api_key_parameter_name = models.CharField(max_length=100, blank=True)
+    urls_latest = models.CharField(max_length=250, blank=True)
+    urls_license = models.CharField(max_length=100, blank=True)
+    status = models.CharField(max_length=100, blank=True)
+
+    def __str__(self):
+        return self.mdb_source_id + ":" + self.provider
 
 class Agency(models.Model):
 
@@ -26,6 +52,7 @@ class Agency(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     name = models.CharField(max_length=100, blank=False)
+    data_source = models.ForeignKey(DataSource, on_delete=models.CASCADE, null=True)
 
     ### from gtfs
     agency_id = models.CharField(max_length=100, blank=True, default="")
@@ -101,3 +128,4 @@ class Route(models.Model):
     # Returns the string representation of the model.
     def __str__(self):
         return self.route_long_name + " (" + self.route_id + ")"
+
