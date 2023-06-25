@@ -37,5 +37,9 @@ variable "ecs_memory" {
   default     = 1024
   type        = number
 }
+variable "domain_hosted_zone_id" {
+  description = "ID for hosted zone"
+  default = "Z13TTEPB8TI5"
+}
 
 

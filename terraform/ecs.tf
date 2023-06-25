@@ -145,3 +145,15 @@ resource "aws_alb_listener" "ebus_app_http" {
 output "alb_url" {
   value = "http://${aws_alb.ebus_app.dns_name}"
 }
+
+resource "aws_route53_record" "subdomain" {
+  zone_id = var.domain_hosted_zone_id
+  name    = "ebus"
+  type    = "A"
+
+  alias {
+    name                   = aws_alb.ebus_app.dns_name
+    zone_id                = aws_alb.ebus_app.zone_id
+    evaluate_target_health = true
+  }
+}
