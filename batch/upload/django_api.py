@@ -28,7 +28,6 @@ class DjangoAPI:
 
     def __init__(self, headers=None) -> None: 
         self.url_base = f"{os.getenv('DJANGO_API_HOST')}/api"
-        print("url_base --> ", self.url_base)
         jwt = get_jwt_from_django_api(self.url_base)
         self.session = requests.Session()
         self.session.headers.update({"Authorization": f"Bearer {jwt}"})
