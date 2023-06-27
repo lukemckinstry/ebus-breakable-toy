@@ -49,10 +49,11 @@ def create_data_source(self):
 
 def create_agency(self, data_source):
     test_data_source_id = data_source.id
-    url = reverse("agency-list")
+    url = reverse("data-source-agency-list", args=[
+                test_data_source_id,
+            ],)
     data = {
         "name": "TestAgency",
-        "data_source": test_data_source_id,
         "agency_id": "TestAgency",
         "agency_name": "TestAgency",
         "agency_url": "www.example.com",
@@ -134,11 +135,7 @@ def data_for_route_with_geometry(geom):
             "trips_thursday": 0,
             "trips_friday": 0,
             "trips_saturday": 0,
-            "trips_sunday": 0,
-            "zev_charging_infrastructure": False,
-            "zev_notes": None,
-            "pct_zev_service": None,
-            "num_zev": None
+            "trips_sunday": 0
         }
     }
     return data
@@ -167,6 +164,10 @@ class AgencyTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Agency.objects.count(), 1)
         self.assertEqual(Agency.objects.get().agency_id, "TestAgency")
+        # test upsert on post
+        response = create_agency(self, data_source)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Agency.objects.count(), 1)
 
 
 class RouteTests(APITestCase):
@@ -284,6 +285,10 @@ class RouteBatchTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Route.objects.count(), 1)
         self.assertEqual(Route.objects.get().route_id, "999")
+        # test upsert on post
+        response = self.client.post(url, request_data, format='json')    
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Route.objects.count(), 1)
 
     def test_update_route_with_geometry(self):
         """

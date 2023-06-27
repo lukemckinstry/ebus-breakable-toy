@@ -43,20 +43,6 @@ class AgencySerializer(serializers.ModelSerializer):
         model = Agency
         fields = '__all__'
 
-        # fields = [
-        #     "id",
-        #     "agency_id",
-        #     "agency_name",
-        #     "agency_url",
-        #     "agency_timezone",
-        #     "agency_lang",
-        #     "agency_phone",
-        #     "agency_fare_url",
-        #     "agency_email",
-        #     "num_vehicles",
-        #     "num_zero_emission_vehicles",
-        # ]
-
 class DataSourceSerializer(serializers.ModelSerializer):
     agency_records = serializers.SerializerMethodField()
 
@@ -68,8 +54,17 @@ class DataSourceSerializer(serializers.ModelSerializer):
         model = DataSource
         fields = "__all__"
 
+class DataSourceUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DataSource
+        fields = ["last_upload", "last_upload_status"]
+
 class RouteBatchSerializer(GeoFeatureModelSerializer):
     agency = serializers.PrimaryKeyRelatedField(queryset=Agency.objects.all())
+    zev_charging_infrastructure = serializers.ReadOnlyField()
+    zev_notes = serializers.ReadOnlyField()
+    pct_zev_service = serializers.ReadOnlyField()
+    num_zev = serializers.ReadOnlyField()
 
     class Meta:
         model = Route

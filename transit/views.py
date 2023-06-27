@@ -1,8 +1,9 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from .serializers import AgencySerializer, RouteSerializer, RouteBatchSerializer, DataSourceSerializer
+from .serializers import AgencySerializer, RouteSerializer, RouteBatchSerializer, DataSourceSerializer, DataSourceUpdateSerializer
 from .models import Agency, Route, DataSource
 from rest_framework import viewsets, permissions, status
+from rest_framework.generics import UpdateAPIView
 from rest_framework.response import Response
 
 
@@ -34,6 +35,14 @@ class DataSourceViewSet(viewsets.ModelViewSet):
     queryset = DataSource.objects.all()
     serializer_class = DataSourceSerializer
 
+class DataSourceUpdateView(UpdateAPIView):
+    """
+    Viewset to automatically provide the `update` action.
+    """
+
+    queryset = DataSource.objects.all()
+    serializer_class = DataSourceUpdateSerializer
+
 class AgencyViewSet(viewsets.ModelViewSet):
     """
     Viewset to automatically provide the `list`, `create`, `retrieve`,
@@ -44,11 +53,27 @@ class AgencyViewSet(viewsets.ModelViewSet):
     serializer_class = AgencySerializer
 
     def get_queryset(self):
+        print("here")
         data_source = self.kwargs.get("datasource_pk")
         if not data_source:
             return Agency.objects.all()  # all other requests
         queryset = Agency.objects.filter(data_source=data_source)
         return queryset
+    
+    def create(self, request, pk):
+        agency_copy = {**request.data}
+        agency_copy = {**agency_copy, "data_source": pk}
+        serializer = self.get_serializer_class()
+        try:
+            agency_instance = Agency.objects.get(data_source=pk,agency_id=agency_copy["agency_id"])
+            agency_to_post = serializer(instance=agency_instance,data=agency_copy)
+        except Agency.DoesNotExist:
+            agency_to_post = serializer(data=agency_copy)
+        if agency_to_post.is_valid():
+            agency_to_post.save()
+            return Response(agency_to_post.data, status=status.HTTP_201_CREATED)
+        print(agency_to_post.errors)
+        return Response(agency_to_post.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RouteViewSet(viewsets.ModelViewSet):
     """
@@ -86,9 +111,15 @@ class RouteBatchViewSet(viewsets.ModelViewSet):
     
     def create(self, request, agency_pk):
         route_copy = {**request.data}
+
         route_copy["properties"] = {**route_copy["properties"], "agency": agency_pk}
         serializer = self.get_serializer_class()
-        route_to_post = serializer(data=route_copy)
+        # POST supports upsert functionality 
+        try:
+            route_instance = Route.objects.get(route_id=route_copy["properties"]["route_id"],agency=agency_pk)
+            route_to_post = serializer(instance=route_instance,data=route_copy)
+        except Route.DoesNotExist:
+            route_to_post = serializer(data=route_copy)
         if route_to_post.is_valid():
             route_to_post.save()
             return Response(route_to_post.data, status=status.HTTP_201_CREATED)

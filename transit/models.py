@@ -1,6 +1,5 @@
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
-from django.conf.global_settings import LANGUAGES
 import uuid
 import pytz
 from rest_framework_mvt.managers import MVTManager
@@ -28,6 +27,7 @@ class DataSource(models.Model):
 
     ### Upload Tracking fields
     last_upload = models.DateTimeField(null=True)
+    last_upload_status = models.CharField(max_length=250, blank=True)
 
     ### Mobility Database fields 
     mdb_source_id = models.CharField(max_length=32, blank=True)
@@ -62,9 +62,9 @@ class Agency(models.Model):
         max_length=50, blank=True, choices=TIMEZONES, default=""
     )
     agency_lang = models.CharField(
-        max_length=50, blank=True, choices=LANGUAGES, default=""
+        max_length=50, blank=True, default=""
     )
-    agency_phone = models.CharField(max_length=20, blank=True, default="")
+    agency_phone = models.CharField(max_length=100, blank=True, default="")
     agency_fare_url = models.CharField(max_length=100, blank=True, default="")
     agency_email = models.EmailField(max_length=100, blank=True, default="")
 
