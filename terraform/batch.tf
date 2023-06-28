@@ -37,7 +37,7 @@ resource "aws_batch_job_definition" "batch" {
     "FARGATE",
   ]
   container_properties = jsonencode({
-    command    = ["/usr/local/src/process_upload.py"]
+    command    = ["/usr/local/src/process_upload.py", "--data_source_id", "Ref::datasource",]
     image      = "617542518433.dkr.ecr.us-east-1.amazonaws.com/breakable-toy-batch-upload:latest"
 
     fargatePlatformConfiguration = {

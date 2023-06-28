@@ -56,3 +56,12 @@ This project uses [`scripts-to-rule-them-all`](https://github.com/azavea/archite
 ### Deployment
 
 Use `./scripts/cipublish` to build and publish container images for the project to AWS ECR. Use `python deploy/update_ecs/py --cluster app --service ebus_app` to update the task definition of the ECS service to use the latest published container image.
+
+### Batch Data Upload Process
+
+ - Set environment variables in the batch job definition
+ - Use the following command to kick of a batch job for a data source:
+
+```
+aws batch submit-job --job-name <job_name> --job-queue <job_queue> --job-definition <job_definition> --parameters datasource=<data_source_id>
+```

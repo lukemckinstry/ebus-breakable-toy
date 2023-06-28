@@ -17,11 +17,19 @@ def deploy(cluster, service):
     client = boto3.client("ecs")
 
     response = get_current_task_definition(client, cluster, service)
-    container_definition = response["taskDefinition"]["containerDefinitions"][0].copy()
+    
+    task_definition = response["taskDefinition"]
+    container_definition = task_definition["containerDefinitions"][0].copy()
 
     response = client.register_task_definition(
         family=response["taskDefinition"]["family"],
         volumes=response["taskDefinition"]["volumes"],
+        requiresCompatibilities=task_definition["requiresCompatibilities"],
+        cpu=task_definition["cpu"],
+        memory=task_definition["memory"],
+        networkMode=task_definition["networkMode"],
+        executionRoleArn=task_definition["executionRoleArn"],
+        taskRoleArn=task_definition["taskRoleArn"],
         containerDefinitions=[container_definition],
     )
     new_task_arn = response["taskDefinition"]["taskDefinitionArn"]
